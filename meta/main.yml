@@ -29,7 +29,5 @@ galaxy_info:
         - xenial
         - bionic
         - focal
-  categories:
-    - system
 
 dependencies: []
