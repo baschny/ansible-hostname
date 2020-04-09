@@ -1,0 +1,28 @@
+---
+
+# "hostname" module uses hostnamectl, which requires dbus on Debian Jessie and later
+- name: Ensure dbus is installed (on Debian 8+ / Ubuntu 16+)
+  apt: name=dbus state=present
+  when: >
+    (ansible_distribution == 'Debian' and ansible_distribution_major_version|int >= 8) or
+    (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version|int >= 16)
+
+# Set the hostname
+- name: Update the hostname (hostname / hostnamectl)
+  hostname:
+    name: "{{inventory_hostname_short}}"
+
+# To allow hostname -f and dns based resolvers to get the correct hostname
+- name: Update the IPv4 hostname (/etc/hosts)
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^127.0.0.1"
+    line: "127.0.0.1{{'\t'}}{{inventory_hostname}}{% if inventory_hostname != inventory_hostname_short %}{{'\t'}}{{inventory_hostname_short}}{% endif %}{{'\t'}}localhost"
+    state: present
+
+- name: Update the IPv6 hostname (/etc/hosts)
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^::1"
+    line: "::1{{'\t\t'}}{{inventory_hostname}}{% if inventory_hostname != inventory_hostname_short %}{{'\t'}}{{inventory_hostname_short}}{% endif %}{{'\t'}}localhost ip6-localhost ip6-loopback"
+    state: present
