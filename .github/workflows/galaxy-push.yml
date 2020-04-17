@@ -1,7 +1,7 @@
 ---
 # See https://github.com/marketplace/actions/publish-ansible-role-to-galaxy
 
-name: Gitub Action to push tags to Ansible Galaxy
+name: Push to Ansible Galaxy
 
 on:
   push:
